@@ -1,5 +1,5 @@
 "use client";
-
+import CipherText from "@/components/CipherText";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -47,7 +47,7 @@ export default function Navbar() {
               onClick={handleNavClick}
               className="text-xs uppercase tracking-[0.2em] text-parchment/60 transition-colors hover:text-brass-soft"
             >
-              {link.label}
+              <CipherText text={link.label} />
             </a>
           ))}
         </nav>
