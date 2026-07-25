@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
+import PreLoader from "@/components/PreLoader";
 import Hero from "@/components/Hero";
 import CrewSection from "@/components/sections/CrewSection";
 import DevilFruitsSection from "@/components/sections/DevilFruitsSection";
@@ -24,6 +25,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function Home() {
   return (
     <main>
+      {/* PreLoader sabse upar rahega */}
+      <PreLoader />
       <Hero />
       <CrewSection />
       <DevilFruitsSection />
