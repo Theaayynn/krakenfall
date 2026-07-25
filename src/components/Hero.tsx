@@ -25,7 +25,7 @@ export default function Hero() {
 
   return (
     <section ref={containerRef} className="relative flex h-screen w-full items-center justify-center overflow-hidden">
-      <OceanScene />
+      <OceanScene containerRef={containerRef} />
 
       {/* Vignette for legibility over the 3D scene */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-abyss/70 via-transparent to-abyss" />

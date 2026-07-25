@@ -3,7 +3,11 @@
 import { useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useAudioStore } from "@/store/audio-store";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const waveVertexShader = `
   uniform float uTime;
@@ -151,29 +155,55 @@ function LightningController({ onFlash }: { onFlash: () => void }) {
   return <pointLight ref={flashLightRef} position={[0, 15, -10]} color="#AFCBEA" intensity={0} distance={60} />;
 }
 
-function CameraParallax() {
+function CameraRig({ containerRef }: { containerRef: React.RefObject<HTMLElement | null> }) {
   const { camera } = useThree();
-  const target = useRef({ x: 0, y: 0 });
+  const mouseTarget = useRef({ x: 0, y: 0 });
+  const scrollProgress = useRef(0);
 
   useEffect(() => {
     function handleMove(e: MouseEvent) {
-      target.current.x = (e.clientX / window.innerWidth - 0.5) * 0.6;
-      target.current.y = (e.clientY / window.innerHeight - 0.5) * 0.3;
+      mouseTarget.current.x = (e.clientX / window.innerWidth - 0.5) * 0.6;
+      mouseTarget.current.y = (e.clientY / window.innerHeight - 0.5) * 0.3;
     }
     window.addEventListener("mousemove", handleMove);
     return () => window.removeEventListener("mousemove", handleMove);
   }, []);
 
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const ctx = gsap.context(() => {
+      ScrollTrigger.create({
+        trigger: containerRef.current,
+        start: "top top",
+        end: "bottom top",
+        scrub: true,
+        onUpdate: (self) => {
+          scrollProgress.current = self.progress;
+        },
+      });
+    });
+    return () => ctx.revert();
+  }, [containerRef]);
+
   useFrame(() => {
-    camera.position.x = THREE.MathUtils.lerp(camera.position.x, target.current.x, 0.03);
-    camera.position.y = THREE.MathUtils.lerp(camera.position.y, 1.2 - target.current.y, 0.03);
-    camera.lookAt(0, 0, -10);
+    const p = scrollProgress.current;
+    const baseY = 1.2 - p * 2.4;
+    const baseZ = THREE.MathUtils.lerp(6, 1.1, p);
+
+    camera.position.x = THREE.MathUtils.lerp(camera.position.x, mouseTarget.current.x, 0.03);
+    camera.position.y = THREE.MathUtils.lerp(camera.position.y, baseY - mouseTarget.current.y, 0.05);
+    camera.position.z = THREE.MathUtils.lerp(camera.position.z, baseZ, 0.05);
+    if (camera instanceof THREE.PerspectiveCamera) {
+      camera.fov = THREE.MathUtils.lerp(camera.fov, 55 + p * 22, 0.05);
+      camera.updateProjectionMatrix();
+    }
+    camera.lookAt(0, -p * 1.5, -10);
   });
 
   return null;
 }
 
-export default function OceanScene() {
+export default function OceanScene({ containerRef }: { containerRef: React.RefObject<HTMLElement | null> }) {
   const flashRef = useRef(0);
   const [flashOpacity, setFlashOpacity] = useState(0);
   const playThunder = useAudioStore((s) => s.playThunder);
@@ -197,7 +227,7 @@ export default function OceanScene() {
         <DriftingFog />
         <FloatingEmbers />
         <LightningController onFlash={triggerFlash} />
-        <CameraParallax />
+        <CameraRig containerRef={containerRef} />
       </Canvas>
       {/* Screen-space flash overlay for a crisper lightning hit */}
       <div
