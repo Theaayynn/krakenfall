@@ -1,12 +1,16 @@
 "use client";
 import { useState, useEffect } from "react";
 import gsap from "gsap";
+import { useAudioStore } from "@/store/audio-store"; // Audio store import kiya
 
 export default function PreLoader() {
   const [phase, setPhase] = useState<"loading" | "masking" | "done">("loading");
   const [progress, setProgress] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentLog, setCurrentLog] = useState("HTTPS://KRAKENFALL.COM/SYS/INITIALIZING...");
+  
+  // Audio store hook
+  const playThunder = useAudioStore((s) => s.playThunder);
 
   const logs = [
     "HTTPS://KRAKENFALL.COM/GRAND_LINE/NAV_DATA/LOG_POSE",
@@ -42,6 +46,13 @@ export default function PreLoader() {
   // 2. Click to Enable Sound & Start Mask Transition
   const handleEnableSound = () => {
     if (!isLoaded) return;
+    
+    // Sound play trigger
+    try {
+      playThunder();
+    } catch (e) {
+      console.log("Audio play error:", e);
+    }
     
     gsap.to(".preloader-ui", {
       opacity: 0,
