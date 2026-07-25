@@ -43,14 +43,11 @@ export default function PreLoader() {
   const handleEnableSound = () => {
     if (!isLoaded) return;
     
-    // Yahan aap apna audio play function daal sakte hain
-    // playThunder() ya Howler.js ka logic
-    
     gsap.to(".preloader-ui", {
       opacity: 0,
       duration: 0.6,
       ease: "power2.inOut",
-      onComplete: () => setPhase("masking") // Start Phase 2
+      onComplete: () => setPhase("masking")
     });
   };
 
@@ -60,7 +57,6 @@ export default function PreLoader() {
       const tl = gsap.timeline({
         onComplete: () => setPhase("done")
       });
-      // Text ko itna bada kardo ki screen transparent hole mein se dikhne lage
       tl.to(".mask-text", { scale: 200, duration: 2.2, ease: "power4.inOut" });
       tl.to(".mask-wrapper", { opacity: 0, duration: 0.5 }, "-=0.3");
     }
@@ -71,14 +67,12 @@ export default function PreLoader() {
   return (
     <div className="fixed inset-0 z-[9999] pointer-events-none">
       
-      {/* PHASE 2: Mask Reveal (White background, black text -> mix-blend makes black transparent) */}
-      {phase !== "done" && (
-        <div className="mask-wrapper absolute inset-0 bg-white flex items-center justify-center overflow-hidden mix-blend-screen pointer-events-none">
-          <h1 className="mask-text text-black font-black text-[25vw] leading-none tracking-tighter uppercase whitespace-nowrap origin-center">
-            K P R
-          </h1>
-        </div>
-      )}
+      {/* PHASE 2: Mask Reveal */}
+      <div className="mask-wrapper absolute inset-0 bg-white flex items-center justify-center overflow-hidden mix-blend-screen pointer-events-none">
+        <h1 className="mask-text text-black font-black text-[25vw] leading-none tracking-tighter uppercase whitespace-nowrap origin-center">
+          K P R
+        </h1>
+      </div>
 
       {/* PHASE 1: Loading Screen */}
       {phase === "loading" && (
