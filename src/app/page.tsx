@@ -1,47 +1,23 @@
-import type { Metadata } from "next";
-import { prisma } from "@/lib/prisma";
 import PreLoader from "@/components/PreLoader";
-import CustomCursor from "@/components/CustomCursor";
-import Hero from "@/components/Hero";
-import CrewSection from "@/components/sections/CrewSection";
-import DevilFruitsSection from "@/components/sections/DevilFruitsSection";
-import JourneySection from "@/components/sections/JourneySection";
-import TreasureSection from "@/components/sections/TreasureSection";
-import GallerySection from "@/components/sections/GallerySection";
-import TimelineSection from "@/components/sections/TimelineSection";
-import ContactSection from "@/components/sections/ContactSection";
-import Footer from "@/components/Footer";
-
-export async function generateMetadata(): Promise<Metadata> {
-  const seo = await prisma.seoMeta.findUnique({ where: { path: "/" } });
-  if (!seo) return {};
-  return {
-    title: seo.title,
-    description: seo.description,
-    keywords: seo.keywords,
-    openGraph: { title: seo.title, description: seo.description, images: seo.ogImage ? [seo.ogImage] : [] },
-  };
-}
 
 export default function Home() {
   return (
-    <main className="overflow-hidden">
-      {/* 1. Custom Mouse Cursor */}
-      <CustomCursor />
-      
-      {/* 2. KPRverse style Loader & Mask Animation */}
+    <main className="relative min-h-screen bg-[#02060D] text-white flex flex-col items-center justify-center overflow-hidden">
+      {/* KPRverse Style Preloader */}
       <PreLoader />
-      
-      {/* 3. Main Site Components (Note: Puraana EntryGate yahan se hata diya gaya hai) */}
-      <Hero />
-      <CrewSection />
-      <DevilFruitsSection />
-      <JourneySection />
-      <TreasureSection />
-      <GallerySection />
-      <TimelineSection />
-      <ContactSection />
-      <Footer />
+
+      {/* Main Hero Section (Placeholder for Next Step) */}
+      <div className="text-center space-y-6 px-4">
+        <span className="text-xs font-mono tracking-[0.4em] text-red-500 uppercase">
+          &gt;&gt; STRAW HAT PIRATES UNIVERSE
+        </span>
+        <h1 className="text-6xl md:text-9xl font-black tracking-tighter uppercase">
+          KRAKENFALL
+        </h1>
+        <p className="text-gray-400 font-mono text-sm max-w-md mx-auto">
+          The Grand Line awaits. Explore the uncharted seas, awakening devil fruits, and legendary bounties.
+        </p>
+      </div>
     </main>
   );
 }

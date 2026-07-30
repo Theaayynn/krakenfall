@@ -2,20 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --font-display: "Georgia", serif;
-  --font-sans: "Inter", system-ui, sans-serif;
+/* Disable default cursor everywhere */
+* {
+  cursor: none !important;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  background-color: #04060a;
-  color: #ede4d3;
-}
-
+/* KPRverse style red text selection */
 ::selection {
-  background: rgba(201, 162, 75, 0.3);
+  background: #dc2626; /* Tailwind Red-600 */
+  color: white;
+}
+
+/* Prevent unwanted horizontal scroll */
+body {
+  overflow-x: hidden;
 }

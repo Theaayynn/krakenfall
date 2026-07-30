@@ -1,24 +1,22 @@
 "use client";
 import { useState, useEffect } from "react";
 import gsap from "gsap";
-import { useAudioStore } from "@/store/audio-store";
 
 export default function PreLoader() {
-  const [phase, setPhase] = useState<"loading" | "masking" | "done">("loading");
+  const [phase, setPhase] = useState<"loading" | "gateBreak" | "done">("loading");
   const [progress, setProgress] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [currentLog, setCurrentLog] = useState("HTTPS://KRAKENFALL.COM/GRAND_LINE/LOG_POSE/INIT");
-  
-  const playThunder = useAudioStore((s) => s.playThunder);
+  const [currentLog, setCurrentLog] = useState("GRAND LINE // LOG POSE SYNCHRONIZING...");
 
   const logs = [
-    "HTTPS://KRAKENFALL.COM/GRAND_LINE/LOG_POSE/SET",
-    "HTTPS://KRAKENFALL.COM/THOUSAND_SUNNY/REACTOR/ISOTOPE-C",
-    "HTTPS://KRAKENFALL.COM/DEVIL_FRUIT/GUM_GUM_AWAKENING",
-    "HTTPS://KRAKENFALL.COM/CREW/STRAW_HAT/BOUNTY_SCAN",
-    "HTTPS://KRAKENFALL.COM/PONEGLYPH/DECRYPTION_SUCCESS"
+    "GRAND LINE // LOG POSE: NEW WORLD SECTOR",
+    "THOUSAND SUNNY // COUP DE BURST REACTOR READY",
+    "DEVIL FRUIT // HITO HITO NO MI, MODEL: NIKA AWAKENING",
+    "STRAW HAT CREW // BOUNTY REFRESH: 3,000,000,000 BERRIES",
+    "PONEGLYPH // ROAD PONEGLYPH DECRYPTION 100%"
   ];
 
+  // 1. Smooth 0% to 100% loading counter
   useEffect(() => {
     const progressInterval = setInterval(() => {
       setProgress((prev) => {
@@ -27,13 +25,15 @@ export default function PreLoader() {
           setIsLoaded(true);
           return 100;
         }
-        return prev + Math.floor(Math.random() * 4) + 1;
+        return prev + Math.floor(Math.random() * 3) + 1;
       });
-    }, 35);
+    }, 40);
 
     const logInterval = setInterval(() => {
-      if (!isLoaded) setCurrentLog(logs[Math.floor(Math.random() * logs.length)]);
-    }, 140);
+      if (!isLoaded) {
+        setCurrentLog(logs[Math.floor(Math.random() * logs.length)]);
+      }
+    }, 160);
 
     return () => {
       clearInterval(progressInterval);
@@ -41,93 +41,94 @@ export default function PreLoader() {
     };
   }, [isLoaded]);
 
-  const handleEnableSound = () => {
+  // 2. Sound activation & Episode 1015 Gate-Break Trigger
+  const handleStartVoyage = () => {
     if (!isLoaded) return;
-    
-    try {
-      playThunder();
-    } catch (e) {
-      console.log("Audio play error:", e);
-    }
-    
-    // Fade out UI, start mask zoom
-    gsap.to(".preloader-ui", {
-      opacity: 0,
-      duration: 0.5,
-      ease: "power2.inOut",
-      onComplete: () => setPhase("masking")
-    });
-  };
 
-  useEffect(() => {
-    if (phase === "masking") {
-      const tl = gsap.timeline({
-        onComplete: () => setPhase("done")
-      });
-      // Massive zoom-in effect breaking through the letters (KPRverse style)
-      tl.to(".mask-text", { scale: 220, duration: 2.0, ease: "power4.inOut" });
-      tl.to(".mask-wrapper", { opacity: 0, duration: 0.4 }, "-=0.3");
-    }
-  }, [phase]);
+    setPhase("gateBreak");
+
+    const tl = gsap.timeline({
+      onComplete: () => setPhase("done"),
+    });
+
+    // KPRverse / Ep 1015 Gate Split Animation
+    tl.to(".gate-left", { x: "-100%", duration: 1.2, ease: "power4.inOut" }, 0);
+    tl.to(".gate-right", { x: "100%", duration: 1.2, ease: "power4.inOut" }, 0);
+    tl.to(".loader-content", { opacity: 0, duration: 0.4 }, 0);
+  };
 
   if (phase === "done") return null;
 
   return (
-    <div className="fixed inset-0 z-[99999] pointer-events-none select-none font-mono">
-      
-      {/* PHASE 2: Epic Mask Reveal (Massive One Piece letters zoom) */}
-      <div className="mask-wrapper absolute inset-0 bg-white flex items-center justify-center overflow-hidden mix-blend-screen pointer-events-none">
-        <h1 className="mask-text text-black font-black text-[18vw] leading-none tracking-tighter uppercase whitespace-nowrap origin-center">
-          ONE PIECE
-        </h1>
+    <div className="fixed inset-0 z-[99999] overflow-hidden font-mono select-none bg-black">
+      {/* GATE BREAK DOORS (EPISODE 1015 ENTRY) */}
+      <div className="absolute inset-0 z-50 flex pointer-events-none">
+        <div className="gate-left w-1/2 h-full bg-[#02060D] border-r border-red-600/40" />
+        <div className="gate-right w-1/2 h-full bg-[#02060D] border-l border-red-600/40" />
       </div>
 
-      {/* PHASE 1: Loading Screen (Kprverse minimalist style with Thousand Sunny wave vibe) */}
+      {/* PRELOADER INTERFACE */}
       {phase === "loading" && (
-        <div className="preloader-ui absolute inset-0 bg-white flex flex-col items-center justify-center text-black pointer-events-auto">
+        <div className="loader-content absolute inset-0 z-10 bg-[#02060D] text-white flex flex-col justify-between py-12 px-6 sm:px-16">
           
-          {/* Animated Thousand Sunny / Wave Graphic Line */}
-          <div className="w-full max-w-5xl px-8 flex flex-col gap-3 absolute top-1/2 -translate-y-1/2">
-            <div className="flex justify-between items-center text-[10px] sm:text-xs uppercase font-semibold">
-              <div className="flex items-center gap-3">
-                <span className="inline-block w-2 h-2 rounded-full bg-black animate-ping"></span>
-                <span>&gt;&gt; SAILING - {progress}%</span>
+          {/* Top System Logs */}
+          <div className="w-full flex justify-between items-center text-[10px] sm:text-xs tracking-[0.25em] text-gray-400 border-b border-white/10 pb-4">
+            <span className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
+              KRAKENFALL // ONE PIECE
+            </span>
+            <span className="text-red-500 font-semibold truncate max-w-[50%]">{currentLog}</span>
+          </div>
+
+          {/* Center Title & Sailing Progress Bar */}
+          <div className="w-full max-w-4xl mx-auto flex flex-col items-center gap-8 my-auto">
+            <h1 className="text-5xl sm:text-8xl font-black tracking-tighter uppercase text-white text-center">
+              ONE PIECE
+            </h1>
+
+            {/* Ocean Track with Thousand Sunny */}
+            <div className="w-full relative py-6">
+              <div className="w-full h-[2px] bg-white/10 relative overflow-hidden">
+                <div
+                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-600 via-amber-500 to-red-600 transition-all duration-75"
+                  style={{ width: `${progress}%` }}
+                />
               </div>
-              <span className="text-gray-400 truncate max-w-[50%]">{currentLog}</span>
-            </div>
-            
-            {/* Progress Bar with wave motion */}
-            <div className="relative h-[2px] w-full bg-black/10 overflow-hidden">
-              <div 
-                className="absolute top-0 left-0 h-full bg-black transition-all duration-75"
-                style={{ width: `${progress}%` }}
+
+              {/* Thousand Sunny Ship Icon moving across the line */}
+              <div
+                className="absolute top-0 -translate-y-1/2 transition-all duration-75 flex flex-col items-center"
+                style={{ left: `${progress}%` }}
               >
-                {/* Miniature Ship Icon moving forward */}
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-3 h-3 bg-black rotate-45"></div>
+                <div className="text-xl sm:text-2xl animate-bounce">⛵</div>
+                <span className="text-[10px] text-amber-400 font-bold bg-black/90 px-2 py-0.5 rounded border border-amber-500/30">
+                  {progress}%
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Sound Enable Button */}
-          <div 
-            className={`absolute bottom-20 flex flex-col items-center gap-3 transition-all duration-700 ${isLoaded ? 'opacity-100 cursor-pointer translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
-            onClick={handleEnableSound}
-          >
-            <div className="w-14 h-14 rounded-full border border-black flex items-center justify-center hover:bg-black hover:text-white transition-all duration-300 shadow-xl">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-              </svg>
-            </div>
-            <span className="text-[9px] uppercase tracking-[0.3em] font-bold text-black">
-              Click to Enable Sound
+          {/* Bottom Action Button */}
+          <div className="flex flex-col items-center gap-3">
+            <button
+              onClick={handleStartVoyage}
+              disabled={!isLoaded}
+              className={`group relative px-8 py-4 bg-red-600 hover:bg-red-700 text-white font-bold text-xs sm:text-sm tracking-[0.3em] uppercase transition-all duration-300 shadow-2xl flex items-center gap-3 ${
+                isLoaded
+                  ? "opacity-100 cursor-pointer animate-pulse scale-105"
+                  : "opacity-30 cursor-not-allowed"
+              }`}
+            >
+              <span>⚔️</span>
+              <span>{isLoaded ? "CLICK TO ENTER THE GRAND LINE" : "INITIALIZING VOYAGE..."}</span>
+            </button>
+            <span className="text-[9px] text-gray-500 tracking-[0.2em] uppercase">
+              AUDIO ENABLED EXPERIENCE
             </span>
           </div>
 
         </div>
       )}
-
     </div>
   );
 }
